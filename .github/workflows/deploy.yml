@@ -44,7 +44,7 @@ jobs:
         key: ${{ secrets.ECS_SSH_KEY }}
         source: "docker-compose.yml"
         # 目标路径：传到 ECS 的哪个目录下？(建议放在 /opt/cicd-ignition)
-        target: "/opt/cicd-ignition"
+        target: "~/deploy/cicd-ignition"
 
       # ==========================================
       # Step 6: 远程点火 (SSH)
@@ -59,7 +59,7 @@ jobs:
         # 核心考点：在 ECS 上执行的 Shell 脚本
         script: |
           set -e
-          cd /opt/cicd-ignition
+          cd ~/depoly/cicd-ignition
           
           # 1. 登录阿里云私有仓库 (注意：这里需要用到 ACR 的账号密码，我已帮你写好变量占位符，请确保你在 GitHub Secrets 里存了它们)
           docker login --username=${{ secrets.ALIYUN_DOCKER_USERNAME }} --password=${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com
