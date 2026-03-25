@@ -27,7 +27,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:v1.0.0
+        tags: crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:tags:crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:${{ github.sha }}
     
 # ==========================================
       # Step 5: 部署图纸下发 (SCP)
@@ -60,6 +60,9 @@ jobs:
         script: |
           set -e
           cd ~/deploy/cicd-ignition
+          
+          # 【核心魔法】：把当前的 Git 哈希值写入 .env 文件，供 docker-compose 读取
+          echo "IMAGE_TAG=${{ github.sha }}" > .env
           
           # 1. 登录阿里云私有仓库 (注意：这里需要用到 ACR 的账号密码，我已帮你写好变量占位符，请确保你在 GitHub Secrets 里存了它们)
           docker login --username=${{ secrets.ALIYUN_DOCKER_USERNAME }} --password=${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com

@@ -1,6 +1,6 @@
 services:
   go-test:
-    image: crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:v1.0.0
+    image: crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:${IMAGE_TAG:-latest}
     container_name: go-server
     ports:
       - "127.0.0.1:8081:8080"
