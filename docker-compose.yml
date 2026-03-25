@@ -1,0 +1,17 @@
+services:
+  go-test:
+    image: crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:v1.0.0
+    container_name: go-server
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+    
+    logging: 
+      driver: "json-file"
+      options: 
+        max-size: "10m"
+        max-file: "3"

@@ -28,6 +28,47 @@ jobs:
         context: .
         push: true
         tags: crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com/jjmstart/cicd-ignition:v1.0.0
+    
+# ==========================================
+      # Step 5: 部署图纸下发 (SCP)
+      # 目标：把本地写好的 docker-compose.yml 传到阿里云 ECS
+      # ==========================================
+    - name: Copy compose file to ECS
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        # 填空 1：引用 GitHub Secrets 中的 ECS 公网 IP
+        host: ${{ secrets.ECS_HOSTNAME }}
+        # 填空 2：引用 GitHub Secrets 中的 ECS 登录用户名 (通常是 root)
+        username: ${{ secrets.ECS_USERNAME }}
+        # 填空 3：引用 GitHub Secrets 中的 ECS SSH 私钥
+        key: ${{ secrets.ECS_SSH_KEY }}
+        source: "docker-compose.yml"
+        # 目标路径：传到 ECS 的哪个目录下？(建议放在 /opt/cicd-ignition)
+        target: "/opt/cicd-ignition"
+
+      # ==========================================
+      # Step 6: 远程点火 (SSH)
+      # 目标：登录 ECS，拉取私有镜像，重启容器
+      # ==========================================
+    - name: Deploy to ECS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.ECS_HOSTNAME }}
+        username: ${{ secrets.ECS_USERNAME }}
+        key: ${{ secrets.ECS_SSH_KEY }}
+        # 核心考点：在 ECS 上执行的 Shell 脚本
+        script: |
+          set -e
+          cd /opt/cicd-ignition
+          
+          # 1. 登录阿里云私有仓库 (注意：这里需要用到 ACR 的账号密码，我已帮你写好变量占位符，请确保你在 GitHub Secrets 里存了它们)
+          docker login --username=${{ secrets.ALIYUN_DOCKER_USERNAME }} --password=${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-1aoj3kfh0sr1qin8.cn-guangzhou.personal.cr.aliyuncs.com
+          
+          # 2. 根据图纸拉取最新镜像
+          docker compose pull
+          
+          # 3. 优雅重建并启动容器
+          docker compose up -d
 
           
 
